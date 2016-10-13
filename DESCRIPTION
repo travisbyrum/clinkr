@@ -1,0 +1,13 @@
+Package: clinkr
+Title: Composable Command Line Interfaces in R
+Version: 0.0.0.9000
+Authors@R: person("Travis", "Byrum", email = "travis.tbyrum@gmail.com", role = c("aut", "cre"))
+Description: Argument parsing and tools to build command line interfaces.
+Depends:
+    R (>= 3.3.1)
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Suggests:
+    testthat
+RoxygenNote: 5.0.1
