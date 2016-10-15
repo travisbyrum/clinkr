@@ -43,20 +43,48 @@ Parser <- R6::R6Class(
         setNames(arg_names)
 
     },
-    add_option = function(..., default, is_flag, type, n_args, choices = NULL) {
+    add_option = function(..., default, is_flag, type, n_args, choices = NULL,
+                          prefix_char = self$prefix_char) {
       name_list <- list(...)
+      type = type %>%
+        match.arg(c('logical', 'numeric', 'integer', 'character', 'complex', 'list'))
+
+      assertthat::assert_that(
+        is.character(name_list),
+        is.logical(is_flag),
+        is.numeric(n_args),
+        is.character(prefix_char),
+        is.list || is.character(choices)
+      )
+
       list_is_names <- vapply(name_list, is.character(), logical(1))
 
       if (!all(list_is_names))
         stop('Invalid option name given')
 
       ## Assume one prefix is a short option
+      ## Does an option have to contain a prefix?? assume yes
 
-      default_name <- list(...)[[1]]
+      prefix_count <- vapply(
+        name_list,
+        function(nm) stringr::str_count(nm, prefix_char),
+        numeric(1)
+      )
 
-      arg_meta <- list(valid_names, type, flag, choices, n_args)
-      sefl$arg_names[[default_name]] <- arg_meta
+      default_name <- name_list[which(max(prefix_count) %in% prefix_count)] %>%
+        gsub(prefix_char, '', .)
 
+      gsub(self$prefix, '', name_list)
+
+      arg_meta <- list(
+        names   = valid_names,
+        type    = type,
+        flag    = flag,
+        choices = choices,
+        n_args  = n_args
+      )
+
+      self$arg_names[[default_name]] <- arg_meta
     }
   )
 )
