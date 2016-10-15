@@ -11,3 +11,4 @@ Composable Command Line Interfaces in R
 - Ability to add options and arguments with inherent type checking
 - Generate docstrings
 - Define entry points
+- Create parser object onload?
