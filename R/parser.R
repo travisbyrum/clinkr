@@ -7,10 +7,10 @@
 Parser <- R6::R6Class(
   'parser',
   public = list(
-    opts = NULL,
-    exec = NULL,
-    arg_names = list(),
-    prefix_char = "",
+    opts        = NULL,
+    exec        = NULL,
+    prefix_char = NULL,
+    arg_map = hashmap(),
 
     initialize = function(opts = commandArgs(), exec = opts[1],
                           prefix_char = '-') {
@@ -19,6 +19,7 @@ Parser <- R6::R6Class(
       self$prefix_char <- prefix_char
     },
 
+    ### Delete this
     print_opts = function() {
       saveRDS(self$opts, '~/clinkr/data/opts_list.rds')
       print(self$opts)
@@ -43,11 +44,10 @@ Parser <- R6::R6Class(
         setNames(arg_names)
 
     },
-    add_option = function(..., default, is_flag, type, n_args, choices = NULL,
+    add_argument = function(..., default, is_flag, type, n_args, choices = NULL,
                           prefix_char = self$prefix_char) {
-      name_list <- list(...)
-      type = type %>%
-        match.arg(c('logical', 'numeric', 'integer', 'character', 'complex', 'list'))
+      type <-  type %>%
+        match.arg(c('logical', 'numeric', 'integer', 'character', 'list'))
 
       assertthat::assert_that(
         is.character(name_list),
@@ -57,16 +57,17 @@ Parser <- R6::R6Class(
         is.list || is.character(choices)
       )
 
-      list_is_names <- vapply(name_list, is.character(), logical(1))
+      option_strings <- list(...)
+      list_are_names <- vapply(option_strings, is.character(), logical(1))
 
-      if (!all(list_is_names))
+      if (!all(list_are_names))
         stop('Invalid option name given')
 
       ## Assume one prefix is a short option
       ## Does an option have to contain a prefix?? assume yes
 
       prefix_count <- vapply(
-        name_list,
+        option_strings,
         function(nm) stringr::str_count(nm, prefix_char),
         numeric(1)
       )
@@ -74,17 +75,16 @@ Parser <- R6::R6Class(
       default_name <- name_list[which(max(prefix_count) %in% prefix_count)] %>%
         gsub(prefix_char, '', .)
 
-      gsub(self$prefix, '', name_list)
-
       arg_meta <- list(
         names   = valid_names,
         type    = type,
         flag    = flag,
+        default = default,
         choices = choices,
         n_args  = n_args
       )
 
-      self$arg_names[[default_name]] <- arg_meta
+      self$arg_map$set_attribute(arg_meta)
     }
   )
 )
