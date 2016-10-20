@@ -2,7 +2,13 @@
 #'
 #' This function produces the argument parsing object.
 #'
-#' @rdname parser
+#' @examples
+#' args <- arg_parser() %>%
+#'    add_argument('--verbose', '-v', is_flag = TRUE, help = 'Prints verbose output.') %>%
+#'    add_argument('--multiply', type = 'numeric', help = 'Multiply by given number,') %>%
+#'    parse_args()
+#'
+#' @keywords internal
 
 Parser <- R6::R6Class(
   'parser',
