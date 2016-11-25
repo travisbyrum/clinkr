@@ -11,4 +11,6 @@ Composable Command Line Interfaces in R
 - Ability to add options and arguments with inherent type checking
 - Generate docstrings
 - Define entry points
-- Create parser object onload?
+- `set_argument` and `set_option` should probably be converted from S3 to R6
+- `set_argument` and `set_option` type argument should include integer?
+- handle infinite argument lists

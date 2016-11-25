@@ -1,42 +1,79 @@
+#' @keywords internal
+set_option <- function(option_strings, store_name = NULL, prefix = '-', help_string = '',
+                       default = NULL, is_flag = FALSE, type = NULL, choices = NULL,
+                       n_args = 1) {
+  assertthat::assert_that(
+    is.character(option_strings) || is.null(option_strings),
+    is.character(store_name) || is.null(store_name),
+    is.character(prefix),
+    is.character(help_string),
+    is.logical(is_flag),
+    is.character(type) || is.null(type),
+    is.character(choices) || is.null(choices),
+    is.numeric(n_args)
+  )
+
+  store_name <- store_name[1]
+  type <- match.arg(type, c('logical', 'numeric', 'character', 'list', NULL))
+
+  if (is_flag) {
+    type <- 'logical'
+    default <- FALSE
+  }
+
+  type_default_mismatch <- !is.null(default) && !is.null(type) && class(default) != type
+
+  if (type_default_mismatch)
+    stop('type does not match class of default')
+
+  if (is.null(type) && !is.null(default))
+    type <- class(default)
+
+  short_option <- option_strings %>%
+    Filter(function(str) grepl(paste0('^', prefix, '[a-zA-Z0-9]'), str), .) %||%
+    NULL
+
+  long_option <- option_strings %>%
+    Filter(function(str) grepl(paste0('^', prefix, '{2}[a-zA-Z0-9]'), str), .)
+
+  if (!length(long_option))
+    stop('At least one long option must be provided')
+
+  if (is.null(store_name))
+    store_name <- gsub(paste0('^', prefix, '+'), '', long_option)
+
+  structure(
+    list(
+      short_option = short_option,
+      long_option  = long_option,
+      store_name   = store_name,
+      help_string  = help_string,
+      default      = default,
+      type         = type,
+      choices      = choices,
+      n_args       = n_args
+    ),
+    class = c("option")
+  )
+}
+
+#' @keywords internal
 add_option <- function(x, ...) UseMethod("add_option")
 
-add_option.Parser <- function(x, names, is_flag, type, n_args, choices = NULL,
-                              prefix_char = '--') {
-  type <-  type %>%
-    match.arg(c('logical', 'numeric', 'integer', 'character', 'list'))
+#' @keywords internal
+add_option.Parser <- function(x, option_strings, store_name = NULL, prefix = '-', help_string = '',
+                              default = NULL, is_flag = NULL, type = NULL, choices = NULL,
+                              n_args = 1) {
 
-  assertthat::assert_that(
-    is.character(name_list),
-    is.logical(is_flag),
-    is.numeric(n_args),
-    is.character(prefix_char),
-    is.list(choices),
-    inherits(x, c('parser', 'R6'))
-  )
-
-  list_are_names <- vapply(names, is.character(), logical(1))
-
-  if (!all(list_are_names))
-    stop('Invalid argument name given')
-
-  ## Assume one prefix is a short option
-  ## Does an option have to contain a prefix?? assume yes
-
-  prefix_count <- vapply(
-    option_strings,
-    function(nm) stringr::str_count(nm, prefix_char),
-    numeric(1)
-  )
-
-  default_name <- name_list[which(max(prefix_count) %in% prefix_count)] %>%
-    gsub(prefix_char, '', .)
-
-  list(
-    names   = valid_names,
-    type    = type,
-    flag    = flag,
-    default = default,
-    choices = choices,
-    n_args  = n_args
+  x$add_option(
+    option_strings   = option_strings,
+    prefix           = prefix,
+    help_string      = help_string,
+    default          = default,
+    store_name       = store_name,
+    is_flag          = is_flag,
+    type             = type,
+    choices          = choices,
+    n_args           = n_args
   )
 }
