@@ -7,7 +7,6 @@
 parse_args(x, ...)
 }
 \description{
-This function actually parses the argument.
+This function parses the argument returning a named list.
 }
-\keyword{internal}
 

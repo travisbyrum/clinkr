@@ -13,13 +13,14 @@ test_that("Argument Object Creation", {
   expect_named(
     argument,
     c(
-      "store_name",
-      "help_string",
-      "default",
-      "type",
-      "choices",
-      "n_args",
-      "position"
+      'store_name',
+      'help_string',
+      'default',
+      'type',
+      'choices',
+      'n_args',
+      'is_option',
+      'position'
     )
   )
   expect_equal(argument$store_name, 'count')

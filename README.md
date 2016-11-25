@@ -13,4 +13,8 @@ Composable Command Line Interfaces in R
 - Define entry points
 - `set_argument` and `set_option` should probably be converted from S3 to R6
 - `set_argument` and `set_option` type argument should include integer?
-- handle infinite argument lists
+- Handle infinite argument lists
+- Handle type mismatch between default and type when is_flag = `TRUE`
+- Handle help option in list
+- Fix is_truthy
+- Parser test failing

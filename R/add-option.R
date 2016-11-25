@@ -1,4 +1,8 @@
-#' @keywords internal
+#' Set Option
+#'
+#' This function creates instantiates a member of the option class.
+#'
+#' @export
 set_option <- function(option_strings, store_name = NULL, prefix = '-', help_string = '',
                        default = NULL, is_flag = FALSE, type = NULL, choices = NULL,
                        n_args = 1) {
@@ -50,6 +54,8 @@ set_option <- function(option_strings, store_name = NULL, prefix = '-', help_str
       help_string  = help_string,
       default      = default,
       type         = type,
+      is_flag      = is_flag,
+      is_option    = TRUE,
       choices      = choices,
       n_args       = n_args
     ),
@@ -61,11 +67,10 @@ set_option <- function(option_strings, store_name = NULL, prefix = '-', help_str
 add_option <- function(x, ...) UseMethod("add_option")
 
 #' @keywords internal
-add_option.Parser <- function(x, option_strings, store_name = NULL, prefix = '-', help_string = '',
-                              default = NULL, is_flag = NULL, type = NULL, choices = NULL,
+add_option.parser <- function(x, option_strings, store_name = NULL, prefix = '-', help_string = '',
+                              default = NULL, is_flag = FALSE, type = NULL, choices = NULL,
                               n_args = 1) {
-
-  x$add_option(
+  option <- set_option(
     option_strings   = option_strings,
     prefix           = prefix,
     help_string      = help_string,
@@ -76,4 +81,7 @@ add_option.Parser <- function(x, option_strings, store_name = NULL, prefix = '-'
     choices          = choices,
     n_args           = n_args
   )
+
+  x$add_option(option = option)
+  invisible(x)
 }

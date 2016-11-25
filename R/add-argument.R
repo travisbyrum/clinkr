@@ -1,4 +1,8 @@
-#' @keywords internal
+#' Set Argument
+#'
+#' This function creates instantiates a member of the argument class.
+#'
+#' @export
 set_argument <- function(store_name, help_string = '', default = NULL, type = NULL,
                          choices = NULL, n_args = 1) {
   assertthat::assert_that(
@@ -31,6 +35,7 @@ set_argument <- function(store_name, help_string = '', default = NULL, type = NU
       type         = type,
       choices      = choices,
       n_args       = n_args,
+      is_option    = FALSE,
       position     = NULL
     ),
     class = c("argument")
@@ -41,10 +46,9 @@ set_argument <- function(store_name, help_string = '', default = NULL, type = NU
 add_argument <- function(x, ...) UseMethod("add_argument")
 
 #' @keywords internal
-add_argument.Parser <- function(x, store_name, help_string = '', default = NULL,
+add_argument.parser <- function(x, store_name, help_string = '', default = NULL,
                                 type = NULL, choices = NULL, n_args = 1) {
-
-  x$add_argument(
+  argument <- set_argument(
     help_string      = help_string,
     default          = default,
     store_name       = store_name,
@@ -52,4 +56,7 @@ add_argument.Parser <- function(x, store_name, help_string = '', default = NULL,
     choices          = choices,
     n_args           = n_args
   )
+
+  x$add_agument(argument = argument)
+  invisible(x)
 }

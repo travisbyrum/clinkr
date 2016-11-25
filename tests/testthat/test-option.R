@@ -13,14 +13,16 @@ test_that("Option Object Creation", {
   expect_named(
     option,
     c(
-      "short_option",
-      "long_option",
-      "store_name",
-      "help_string",
-      "default",
-      "type",
-      "choices",
-      "n_args"
+      'short_option',
+      'long_option',
+      'store_name',
+      'help_string',
+      'default',
+      'type',
+      'is_flag',
+      'is_option',
+      'choices',
+      'n_args'
     )
   )
   expect_equal(option$short_option, '-c')

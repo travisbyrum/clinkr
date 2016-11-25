@@ -14,8 +14,8 @@ Parser <- R6::R6Class(
   public = list(
     prefix       = NULL,
     description  = NULL,
-    n_arguments  = NULL,
-    n_options    = NULL,
+    n_arguments  = 0,
+    n_options    = 0,
     option_map   = HashMap$new(),
 
     initialize = function(option_list = NULL, prefix = '-', include_help = TRUE,
@@ -52,66 +52,123 @@ Parser <- R6::R6Class(
           arguments[[i]]$position <- i
         }
 
-        self$n_arguments <- n_arguments
-        self$n_options <- n_options
+        self$n_arguments <- length(arguments)
+        self$n_options <- length(options)
         self$option_map$putAll(arguments)
         self$option_map$putAll(options)
       }
 
-      if (include_help)
-        self$add_option(
-          option_strings   = c('-h', '--help'),
-          is_flag          = TRUE
+      if (include_help) {
+        help_option <- set_option(
+          option_strings  = c('-h', '--help'),
+          is_flag         = TRUE
         )
 
+        self$add_option(option = help_option)
+      }
+
       invisible(self)
     },
 
-    add_argument = function(store_name, help_string = '', default = NULL, type = NULL,
-                            choices = NULL, n_args = 1) {
-      argument <- set_argument(
-        help_string      = help_string,
-        default          = default,
-        store_name       = store_name,
-        type             = type,
-        choices          = choices,
-        n_args           = n_args
-      )
+    add_argument = function(argument) {
+      assertthat::assert_that(inherits(argument, 'argument'))
 
-      position <- ifelse(is.null(self$n_arguments), 1, n_arguments + 1)
+      position <- ifelse(is.null(self$n_arguments), 1, self$n_arguments + 1)
       argument$position <- position
-      self$map$put(argument$store_name, argument)
+
+      self$option_map$put(argument$store_name, argument)
+      self$n_arguments <- position
 
       invisible(self)
     },
 
-    add_option = function(option_strings, store_name = NULL, prefix = '-', help_string = '',
-                          default = NULL, is_flag = NULL, type = NULL, choices = NULL,
-                          n_args = 1) {
-      option <- set_option(
-        option_strings   = option_strings,
-        prefix           = prefix,
-        help_string      = help_string,
-        default          = default,
-        store_name       = store_name,
-        is_flag          = is_flag,
-        type             = type,
-        choices          = choices,
-        n_args           = n_args
-      )
+    add_option = function(option) {
+      assertthat::assert_that(inherits(option, 'option'))
 
-      self$map$put(option$store_name, option)
+      self$option_map$put(option$store_name, option)
+      self$n_options <- self$n_options + 1
 
       invisible(self)
     },
 
-    parse = function(args = commandArgs(trailingOnly = FALSE)) {
-      ## Return named list
-      ## Check args then check options
+    parse = function(args = commandArgs(trailingOnly = TRUE)) {
+      option_list <- self$option_map$entrySet()
+
+      options <- option_list %>%
+        Filter(function(opt) inherits(opt, 'option'), .)
+
+      arguments <- option_list %>%
+        Filter(function(arg) inherits(arg, 'argument'), .)
+
+      parsed_options <- lapply(
+        options,
+        function(opt) {
+          if (opt$store_name == 'help')
+            return(NULL)
+
+          short_opt <- opt$short_option
+          long_opt <- opt$long_option
+
+          short_position <- NULL
+          long_position <- NULL
+          try(short_position <- which(grepl(short_opt, args)), silent = TRUE)
+          try(long_position <- which(grepl(long_opt, args)), silent = TRUE)
+
+          if (length(short_position))
+            return_value <- ifelse(opt$is_flag, TRUE, args[seq(short_position + 1, short_position + opt$n_args)])
+
+          if (length(long_position))
+            return_value <- ifelse(opt$is_flag, TRUE, args[seq(long_position + 1, long_position + opt$n_args)])
+
+          if (!length(short_position) && !length(long_position))
+            return_value <- opt$default
+
+          args <<- dplyr::setdiff(args, c(return_value, long_opt, short_opt))
+
+          return_value <- switch(
+            opt$type,
+            'logical'   = as.logical(return_value),
+            'numeric'   = as.numeric(return_value),
+            'character' = as.character(return_value),
+            'list'      = as.list(return_value)
+          )
+        }
+      ) %>%
+        setNames(names(options)) %>%
+        Filter(function(opt) !is.null(opt), .)
+
+      parsed_arguments <- lapply(
+        arguments,
+        function(arg) {
+          return_value <- args[seq(arg$position, arg$position + arg$n_args - 1)]
+
+          if (!is_truthy(return_value))
+            return_value <- arg$default
+
+          return_value <- switch(
+            arg$type,
+            'logical'   = as.logical(return_value),
+            'numeric'   = as.numeric(return_value),
+            'character' = as.character(return_value),
+            'list'      = as.list(return_value)
+          )
+        }
+      ) %>%
+        setNames(names(arguments)) %>%
+        Filter(function(arg) !is.null(arg), .)
+
+      parsed_options %>%
+        append(parsed_arguments)
     }
   )
 )
 
+#' Create Parser Object
+#'
+#' This function is a wrapper around the R6 Parser class to enable parser
+#' creation and adding arguments/options through piping.
+#'
+#' @export
 arg_parser <- function(option_list = NULL, prefix = '-', include_help = TRUE,
                        description = '') {
   Parser$new(
@@ -124,13 +181,14 @@ arg_parser <- function(option_list = NULL, prefix = '-', include_help = TRUE,
 
 #' Parse arguments
 #'
-#' This function actually parses the argument.
-#' @keywords internal
+#' This function parses the argument returning a named list.
+#'
+#' @export
 parse_args <- function(x, ...) UseMethod("parse_args")
 
-parse_args.parser <- function(x, args = commandArgs(trailingOnly = FALSE)) {
+parse_args.parser <- function(x, args = commandArgs(trailingOnly = TRUE)) {
   assertthat::assert_that(
-    is.list(args)
+    is.list(args) || is.character(args)
   )
 
   x$parse(args)
