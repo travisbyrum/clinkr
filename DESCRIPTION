@@ -11,7 +11,8 @@ LazyData: true
 Imports:
     R6,
     magrittr,
-    assertthat
+    assertthat,
+    dplyr
 Suggests:
     testthat
 RoxygenNote: 5.0.1
