@@ -3,9 +3,10 @@
 #' This function produces the argument parsing object.
 #'
 #' @examples
+#'
 #' args <- arg_parser() %>%
-#'    add_argument('--verbose', '-v', is_flag = TRUE, help = 'Prints verbose output.') %>%
-#'    add_argument('--multiply', type = 'numeric', help = 'Multiply by given number,') %>%
+#'    add_option(c('--verbose', '-v'), is_flag = TRUE, help = 'Prints verbose output.') %>%
+#'    add_option('--multiply', type = 'numeric', help = 'Multiply by given number.') %>%
 #'    parse_args()
 #'
 #' @keywords internal
@@ -14,9 +15,9 @@ Parser <- R6::R6Class(
   public = list(
     prefix       = NULL,
     description  = NULL,
+    option_map   = NULL,
     n_arguments  = 0,
     n_options    = 0,
-    option_map   = HashMap$new(),
 
     initialize = function(option_list = NULL, prefix = '-', include_help = TRUE,
                           description = '') {
@@ -38,6 +39,7 @@ Parser <- R6::R6Class(
 
       self$prefix <- prefix
       self$description <- description
+      self$option_map <- HashMap$new()
 
       if (!is.null(option_list)) {
         names(option_list) <- Map(function(opt) opt$store_name, option_list)
@@ -186,6 +188,7 @@ arg_parser <- function(option_list = NULL, prefix = '-', include_help = TRUE,
 #' @export
 parse_args <- function(x, ...) UseMethod("parse_args")
 
+#' @export
 parse_args.parser <- function(x, args = commandArgs(trailingOnly = TRUE)) {
   assertthat::assert_that(
     is.list(args) || is.character(args)

@@ -1,5 +1,8 @@
 # clinkr
+
 Composable Command Line Interfaces in R
+
+[![Travis-CI Build Status](https://travis-ci.org/travisbyrum/clinkr.svg?branch=master)](https://travis-ci.org/travisbyrum/clinkr)
 
 # Inspiration
 - [Click](http://click.pocoo.org/5/) Python package for building command line interfaces.
@@ -18,3 +21,4 @@ Composable Command Line Interfaces in R
 - Handle help option in list
 - Fix is_truthy
 - Parser test failing
+- Build queue for positional arguments

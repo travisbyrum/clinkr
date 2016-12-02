@@ -12,9 +12,10 @@ Parser
 This function produces the argument parsing object.
 }
 \examples{
+
 args <- arg_parser() \%>\%
-   add_argument('--verbose', '-v', is_flag = TRUE, help = 'Prints verbose output.') \%>\%
-   add_argument('--multiply', type = 'numeric', help = 'Multiply by given number,') \%>\%
+   add_option(c('--verbose', '-v'), is_flag = TRUE, help = 'Prints verbose output.') \%>\%
+   add_option('--multiply', type = 'numeric', help = 'Multiply by given number.') \%>\%
    parse_args()
 
 }

@@ -11,4 +11,5 @@ set_option(option_strings, store_name = NULL, prefix = "-",
 \description{
 This function creates instantiates a member of the option class.
 }
+\keyword{internal}
 

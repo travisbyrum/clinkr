@@ -2,7 +2,7 @@
 #'
 #' This function creates instantiates a member of the argument class.
 #'
-#' @export
+#' @keywords internal
 set_argument <- function(store_name, help_string = '', default = NULL, type = NULL,
                          choices = NULL, n_args = 1) {
   assertthat::assert_that(
@@ -42,10 +42,10 @@ set_argument <- function(store_name, help_string = '', default = NULL, type = NU
   )
 }
 
-#' @keywords internal
+#' @export
 add_argument <- function(x, ...) UseMethod("add_argument")
 
-#' @keywords internal
+#' @export
 add_argument.parser <- function(x, store_name, help_string = '', default = NULL,
                                 type = NULL, choices = NULL, n_args = 1) {
   argument <- set_argument(

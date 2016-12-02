@@ -2,7 +2,7 @@
 #'
 #' This function creates instantiates a member of the option class.
 #'
-#' @export
+#' @keywords internal
 set_option <- function(option_strings, store_name = NULL, prefix = '-', help_string = '',
                        default = NULL, is_flag = FALSE, type = NULL, choices = NULL,
                        n_args = 1) {
@@ -63,10 +63,10 @@ set_option <- function(option_strings, store_name = NULL, prefix = '-', help_str
   )
 }
 
-#' @keywords internal
+#' @export
 add_option <- function(x, ...) UseMethod("add_option")
 
-#' @keywords internal
+#' @export
 add_option.parser <- function(x, option_strings, store_name = NULL, prefix = '-', help_string = '',
                               default = NULL, is_flag = FALSE, type = NULL, choices = NULL,
                               n_args = 1) {

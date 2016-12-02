@@ -10,4 +10,5 @@ set_argument(store_name, help_string = "", default = NULL, type = NULL,
 \description{
 This function creates instantiates a member of the argument class.
 }
+\keyword{internal}
 
