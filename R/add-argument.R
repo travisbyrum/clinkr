@@ -6,7 +6,7 @@
 set_argument <- function(store_name, help_string = '', default = NULL, type = NULL,
                          choices = NULL, n_args = 1) {
   assertthat::assert_that(
-    is.character(store_name) || is.null(store_name),
+    is.character(store_name),
     is.character(help_string),
     is.character(type) || is.null(type),
     is.character(choices) || is.null(choices),

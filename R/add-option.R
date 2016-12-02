@@ -7,7 +7,7 @@ set_option <- function(option_strings, store_name = NULL, prefix = '-', help_str
                        default = NULL, is_flag = FALSE, type = NULL, choices = NULL,
                        n_args = 1) {
   assertthat::assert_that(
-    is.character(option_strings) || is.null(option_strings),
+    is.character(option_strings),
     is.character(store_name) || is.null(store_name),
     is.character(prefix),
     is.character(help_string),
