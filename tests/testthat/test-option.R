@@ -33,13 +33,12 @@ test_that("Option Object Creation", {
   expect_is(option$help_string, 'character')
 })
 
-
 ### Testing type default mismatch ---------------------------------------------
 test_that("Type Default Mismatch", {
   tmp <- function() set_option(
-    option_strings = c('-c', '--count'),
+    option_strings = c('-n', '--name'),
     help_string    = 'Test help string.',
-    default        = 3,
+    default        = 'a',
     type           = 'logical'
   )
 

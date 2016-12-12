@@ -3,6 +3,7 @@
 Composable Command Line Interfaces in R
 
 [![Travis-CI Build Status](https://travis-ci.org/travisbyrum/clinkr.svg?branch=master)](https://travis-ci.org/travisbyrum/clinkr)
+[![Coverage Status](https://img.shields.io/codecov/c/github/travisbyrum/clinkr/master.svg)](https://codecov.io/github/travisbyrum/clinkr?branch=master)
 
 # Inspiration
 - [Click](http://click.pocoo.org/5/) Python package for building command line interfaces.

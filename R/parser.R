@@ -7,7 +7,7 @@
 #' args <- arg_parser() %>%
 #'    add_option(c('--verbose', '-v'), is_flag = TRUE, help = 'Prints verbose output.') %>%
 #'    add_option('--multiply', type = 'numeric', help = 'Multiply by given number.') %>%
-#'    parse_args()
+#'    parse_args(args = c('--verbose', '--multiply', '3'))
 #'
 #' @keywords internal
 Parser <- R6::R6Class(
@@ -16,6 +16,7 @@ Parser <- R6::R6Class(
     prefix       = NULL,
     description  = NULL,
     option_map   = NULL,
+    argument_map = NULL,
     n_arguments  = 0,
     n_options    = 0,
 
@@ -39,7 +40,8 @@ Parser <- R6::R6Class(
 
       self$prefix <- prefix
       self$description <- description
-      self$option_map <- HashMap$new()
+      self$option_map <- option_map()
+      self$argument_map <- queue()
 
       if (!is.null(option_list)) {
         names(option_list) <- Map(function(opt) opt$store_name, option_list)
@@ -51,19 +53,18 @@ Parser <- R6::R6Class(
           Filter(function(arg) inherits(arg, 'argument'), .)
 
         for (i in seq_along(arguments)) {
-          arguments[[i]]$position <- i
+          self$argument_map$enqueue(arguments[[i]])
         }
 
         self$n_arguments <- length(arguments)
         self$n_options <- length(options)
-        self$option_map$putAll(arguments)
         self$option_map$putAll(options)
       }
 
       if (include_help) {
         help_option <- set_option(
-          option_strings  = c('-h', '--help'),
-          is_flag         = TRUE
+          option_strings = c('-h', '--help'),
+          is_flag        = TRUE
         )
 
         self$add_option(option = help_option)
@@ -75,11 +76,8 @@ Parser <- R6::R6Class(
     add_argument = function(argument) {
       assertthat::assert_that(inherits(argument, 'argument'))
 
-      position <- ifelse(is.null(self$n_arguments), 1, self$n_arguments + 1)
-      argument$position <- position
-
-      self$option_map$put(argument$store_name, argument)
-      self$n_arguments <- position
+      self$argument_map$enqueue(argument)
+      self$n_arguments <- self$n_arguments + 1
 
       invisible(self)
     },
@@ -94,15 +92,21 @@ Parser <- R6::R6Class(
     },
 
     parse = function(args = commandArgs(trailingOnly = TRUE)) {
-      option_list <- self$option_map$entrySet()
+      if (!length(args))
+        stop('No arguments provided.')
 
-      options <- option_list %>%
-        Filter(function(opt) inherits(opt, 'option'), .)
+      options <- self$option_map$entrySet()
+      arguments <- purrr::map(
+        seq_len(self$n_arguments),
+        function(i) {
+          arg <- self$argument_map$dequeue()
+          arg$position <- i
+          arg
+        }
+      ) %>%
+        setNames(purrr::map_chr(., function(a) a$store_name))
 
-      arguments <- option_list %>%
-        Filter(function(arg) inherits(arg, 'argument'), .)
-
-      parsed_options <- lapply(
+      parsed_options <- purrr::map(
         options,
         function(opt) {
           if (opt$store_name == 'help')
@@ -139,13 +143,15 @@ Parser <- R6::R6Class(
         setNames(names(options)) %>%
         Filter(function(opt) !is.null(opt), .)
 
-      parsed_arguments <- lapply(
+      parsed_arguments <- purrr::map(
         arguments,
         function(arg) {
           return_value <- args[seq(arg$position, arg$position + arg$n_args - 1)]
 
           if (!is_truthy(return_value))
             return_value <- arg$default
+
+          args <<- dplyr::setdiff(args, return_value)
 
           return_value <- switch(
             arg$type,
@@ -189,7 +195,7 @@ arg_parser <- function(option_list = NULL, prefix = '-', include_help = TRUE,
 parse_args <- function(x, ...) UseMethod("parse_args")
 
 #' @export
-parse_args.parser <- function(x, args = commandArgs(trailingOnly = TRUE)) {
+parse_args.parser <- function(x, args) {
   assertthat::assert_that(
     is.list(args) || is.character(args)
   )

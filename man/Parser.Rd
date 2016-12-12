@@ -16,7 +16,7 @@ This function produces the argument parsing object.
 args <- arg_parser() \%>\%
    add_option(c('--verbose', '-v'), is_flag = TRUE, help = 'Prints verbose output.') \%>\%
    add_option('--multiply', type = 'numeric', help = 'Multiply by given number.') \%>\%
-   parse_args()
+   parse_args(args = c('--verbose', '--multiply', '3'))
 
 }
 \keyword{internal}
