@@ -13,7 +13,8 @@ Imports:
     magrittr,
     assertthat,
     purrr,
-    dplyr
+    dplyr,
+    stringr
 Suggests:
     testthat,
     covr
