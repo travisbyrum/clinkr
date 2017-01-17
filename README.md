@@ -6,9 +6,9 @@ Composable Command Line Interfaces in R
 [![Travis-CI Build Status](https://travis-ci.org/travisbyrum/clinkr.svg?branch=master)](https://travis-ci.org/travisbyrum/clinkr)
 [![Coverage Status](https://img.shields.io/codecov/c/github/travisbyrum/clinkr/master.svg)](https://codecov.io/github/travisbyrum/clinkr?branch=master)
 
-clinkr goal is to create usable argument parsing for R scripts using syntax that follows modern R idioms.
+The goal of clinkr is to allow argument parsing for R scripts using syntax that follows modern R idioms.
 
-To install the latest development version from github, run the following:
+To install the latest development version from github:
 
 ``` r
 devtools::install_github("travisbyrum/clinkr")
@@ -18,7 +18,7 @@ Examples
 --------
 
 The following provides an example of a running a command line R script using formatted arguments.
-You first create a parser object and then specify options giving information as to their type, default, or whether or not it is specified as a flag.  In a hypothetical script call `test.R` you can do this through the following code:
+You first create a parser object and then defin options giving information as to their type, default, or whether or not it is to be specified as a flag.  In a hypothetical script called `test.R` you can do this through the following code:
 
 ``` r
 args <- arg_parser() %>% 
@@ -33,7 +33,7 @@ As you can see this follows modern R idioms and allows piping to more easily add
 Rscript test.R --verbose --multiply 3
 ```
 
-the following is returned:
+the arguments are returned parsed into a list:
 
 ``` r
 args
