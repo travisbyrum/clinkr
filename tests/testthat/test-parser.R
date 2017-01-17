@@ -22,10 +22,10 @@ test_that("Add Option and Argument to Parser", {
   )
 
   argument <- set_argument(
-    store_name       = 'count',
-    help_string      = 'Test help string.',
-    default          = 3,
-    type             = 'numeric'
+    store_name  = 'count',
+    help_string = 'Test help string.',
+    default     = 3,
+    type        = 'numeric'
   )
 
   parser$add_option(option)
@@ -47,10 +47,10 @@ test_that("Create Parser with options and parse", {
       type           = 'numeric'
     ),
     set_argument(
-      store_name       = 'count',
-      help_string      = 'Test help string.',
-      default          = 3,
-      type             = 'numeric'
+      store_name  = 'count',
+      help_string = 'Test help string.',
+      default     = 3,
+      type        = 'numeric'
     )
   )
 
@@ -66,10 +66,11 @@ test_that("Create Parser with options and parse", {
 
 ### Test parsing with pipe ----------------------------------------------------
 test_that("Parsing with pipe", {
-  args <- arg_parser() %>%
+  test_parser <- arg_parser() %>%
     add_option(c('--verbose', '-v'), is_flag = TRUE, help = 'Prints verbose output.') %>%
-    add_option('--multiply', type = 'numeric', help = 'Multiply by given number,') %>%
-    parse_args(args = c('--verbose', '--multiply', '3'))
+    add_option('--multiply', type = 'numeric', help = 'Multiply by given number,')
+
+  args <- parse_args(test_parser, args = c('--verbose', '--multiply', '3'))
 
   expect_named(args, c("multiply", "verbose"))
   expect_true(args$verbose)

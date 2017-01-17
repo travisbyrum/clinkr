@@ -95,7 +95,10 @@ Parser <- R6::R6Class(
       if (!length(args))
         stop('No arguments provided.')
 
+      args <- scrub_args(args, prefix = self$prefix)
+
       options <- self$option_map$entrySet()
+
       arguments <- purrr::map(
         seq_len(self$n_arguments),
         function(i) {
@@ -117,6 +120,7 @@ Parser <- R6::R6Class(
 
           short_position <- NULL
           long_position <- NULL
+
           try(short_position <- which(grepl(short_opt, args)), silent = TRUE)
           try(long_position <- which(grepl(long_opt, args)), silent = TRUE)
 

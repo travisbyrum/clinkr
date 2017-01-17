@@ -29,14 +29,14 @@ set_argument <- function(store_name, help_string = '', default = NULL, type = NU
 
   structure(
     list(
-      store_name   = store_name,
-      help_string  = help_string,
-      default      = default,
-      type         = type,
-      choices      = choices,
-      n_args       = n_args,
-      is_option    = FALSE,
-      position     = NULL
+      store_name  = store_name,
+      help_string = help_string,
+      default     = default,
+      type        = type,
+      choices     = choices,
+      n_args      = n_args,
+      is_option   = FALSE,
+      position    = NULL
     ),
     class = c("argument")
   )
@@ -49,12 +49,12 @@ add_argument <- function(x, ...) UseMethod("add_argument")
 add_argument.parser <- function(x, store_name, help_string = '', default = NULL,
                                 type = NULL, choices = NULL, n_args = 1) {
   argument <- set_argument(
-    help_string      = help_string,
-    default          = default,
-    store_name       = store_name,
-    type             = type,
-    choices          = choices,
-    n_args           = n_args
+    help_string = help_string,
+    default     = default,
+    store_name  = store_name,
+    type        = type,
+    choices     = choices,
+    n_args      = n_args
   )
 
   x$add_agument(argument = argument)

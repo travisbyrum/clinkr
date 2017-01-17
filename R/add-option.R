@@ -71,15 +71,15 @@ add_option.parser <- function(x, option_strings, store_name = NULL, prefix = '-'
                               default = NULL, is_flag = FALSE, type = NULL, choices = NULL,
                               n_args = 1) {
   option <- set_option(
-    option_strings   = option_strings,
-    prefix           = prefix,
-    help_string      = help_string,
-    default          = default,
-    store_name       = store_name,
-    is_flag          = is_flag,
-    type             = type,
-    choices          = choices,
-    n_args           = n_args
+    option_strings = option_strings,
+    prefix         = prefix,
+    help_string    = help_string,
+    default        = default,
+    store_name     = store_name,
+    is_flag        = is_flag,
+    type           = type,
+    choices        = choices,
+    n_args         = n_args
   )
 
   x$add_option(option = option)
