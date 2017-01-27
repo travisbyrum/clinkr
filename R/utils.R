@@ -1,3 +1,5 @@
+#' @importFrom stats setNames
+#'
 #' @importFrom magrittr %>%
 #' @export
 magrittr::`%>%`
