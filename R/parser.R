@@ -91,7 +91,7 @@ Parser <- R6::R6Class(
       invisible(self)
     },
 
-    parse = function(args = commandArgs(trailingOnly = TRUE)) {
+    parse = function(args) {
       if (!length(args))
         stop('No arguments provided.')
 
@@ -199,7 +199,7 @@ arg_parser <- function(option_list = NULL, prefix = '-', include_help = TRUE,
 parse_args <- function(x, ...) UseMethod("parse_args")
 
 #' @export
-parse_args.parser <- function(x, args) {
+parse_args.parser <- function(x, args = commandArgs(trailingOnly = TRUE)) {
   assertthat::assert_that(
     is.list(args) || is.character(args)
   )
